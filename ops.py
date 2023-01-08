@@ -158,12 +158,17 @@ class LINE_ART_TOOLS_OT_open_properties(LINE_ART_TOOLS_OT_base_class):
     def execute(self, context):
         line_art_tools_items = context.window_manager.line_art_tools_items
         context.view_layer.objects.active = line_art_tools_items[self.index].object
-        # context.active_object = line_art_tools_items[self.index].object
+        for obj in context.selected_objects:
+            obj.select_set(False)
+        line_art_tools_items[self.index].object.select_set(True)
+
         bpy.ops.wm.redraw_timer(type="DRAW_WIN_SWAP", iterations=1)
         for area in context.window.screen.areas:
             if area.type == "PROPERTIES":
                 area.spaces[0].context = "MODIFIER"
                 return {"FINISHED"}
+        self.report({"ERROR"}, "No Properties Editor Found")
+        return {"CANCELLED"}
 
 
 class LINE_ART_TOOLS_OT_stroke_thickness_space(LINE_ART_TOOLS_OT_base_class):
