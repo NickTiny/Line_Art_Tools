@@ -23,11 +23,11 @@ class LINE_ART_TOOLS_PT_control(bpy.types.Panel):
                 slider=False,
                 expand=False,
                 text="Thickness Offset",
-            )  # TODO Make this safe so it doesnt error when none are present
+            )
+        row.operator("linearttools.refresh", icon="FILE_REFRESH", text="")
         row.operator(
             "linearttools.stroke_thickness_space", icon="MOD_THICKNESS", text=""
         )
-        row.operator("linearttools.refresh", icon="FILE_REFRESH", text="")
 
         row.operator("linearttools.add_gp", icon="PLUS", text="")
 
