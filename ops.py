@@ -5,6 +5,7 @@ from .core import (
     get_gp_modifier_by_name,
     sync_line_art_obj_to_strip,
     get_object_animation_is_constant,
+    get_line_art_tools_collection,
 )
 
 
@@ -162,7 +163,7 @@ class LINE_ART_TOOLS_OT_open_properties(LINE_ART_TOOLS_OT_base_class):
         for area in context.window.screen.areas:
             if area.type == "PROPERTIES":
                 area.spaces[0].context = "MODIFIER"
-        return {"FINISHED"}
+                return {"FINISHED"}
 
 
 class LINE_ART_TOOLS_OT_stroke_thickness_space(LINE_ART_TOOLS_OT_base_class):
@@ -256,15 +257,24 @@ class LINE_ART_TOOLS_OT_add_gp(LINE_ART_TOOLS_OT_base_class):
         bpy.ops.object.gpencil_add(type=self.type)
         item = line_art_tools_item_add(line_art_tools_items, context.active_object)
         obj = item.object
+        obj.name = f"LAT_{context.scene.name}"
         if self.type == "LRT_OBJECT":
             obj.grease_pencil_modifiers[
                 item.lr_mod
             ].source_object = context.window_manager.line_art_target_object
+            obj.name = f"LAT_{context.window_manager.line_art_target_object.name}"
 
         if self.type == "LRT_COLLECTION":
             obj.grease_pencil_modifiers[
                 item.lr_mod
             ].source_collection = context.window_manager.line_art_target_collection
+            obj.name = f"LAT_{context.window_manager.line_art_target_collection.name}"
+        obj.users_collection[0].objects.unlink(obj)
+        col = get_line_art_tools_collection(context)
+        col.objects.link(obj)
+        return {"FINISHED"}
+
+
 class LINE_ART_TOOLS_OT_remove_gp(LINE_ART_TOOLS_OT_base_class):
     bl_idname = "linearttools.remove_gp"
     bl_label = "Delete Object"
