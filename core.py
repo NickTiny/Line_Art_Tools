@@ -11,7 +11,7 @@ def get_line_art_tools_collection(context):
             collection = col
     if not collection:
         collection = bpy.data.collections.new(col_name)
-        context.scene.children.link(collection)
+        context.scene.collection.children.link(collection)
     return collection
 
 
