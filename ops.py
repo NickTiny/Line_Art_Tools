@@ -265,6 +265,18 @@ class LINE_ART_TOOLS_OT_add_gp(LINE_ART_TOOLS_OT_base_class):
             obj.grease_pencil_modifiers[
                 item.lr_mod
             ].source_collection = context.window_manager.line_art_target_collection
+class LINE_ART_TOOLS_OT_remove_gp(LINE_ART_TOOLS_OT_base_class):
+    bl_idname = "linearttools.remove_gp"
+    bl_label = "Delete Object"
+    bl_description = "TODO"
+    bl_options = {"UNDO"}
+
+    index: bpy.props.IntProperty(name="index", default=0)
+
+    def execute(self, context):
+        line_art_tools_items = context.window_manager.line_art_tools_items
+        bpy.data.objects.remove(line_art_tools_items[self.index].object)
+        line_art_tools_items.remove(self.index)
 
         return {"FINISHED"}
 
@@ -465,6 +477,7 @@ classes = (
     LINE_ART_TOOLS_OT_open_properties,
     LINE_ART_TOOLS_OT_obj_select,
     LINE_ART_TOOLS_OT_copy_mod,
+    LINE_ART_TOOLS_OT_remove_gp,
 )
 
 
