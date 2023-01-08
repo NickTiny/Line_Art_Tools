@@ -1,5 +1,19 @@
 import bpy
 
+col_name = "Line Art Tool Objects"
+
+
+def get_line_art_tools_collection(context):
+    # Find existing Collection
+    collection = None
+    for col in context.scene.collection.children:
+        if col_name in col.name:
+            collection = col
+    if not collection:
+        collection = bpy.data.collections.new(col_name)
+        context.scene.children.link(collection)
+    return collection
+
 
 def get_gp_modifier_by_name(obj: bpy.types.Object, name: str):
     """Return GP Modifer"""
