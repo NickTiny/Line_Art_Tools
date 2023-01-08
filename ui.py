@@ -16,7 +16,6 @@ class LINE_ART_TOOLS_PT_control(bpy.types.Panel):
         layout = self.layout
         col = layout.box()
         row = col.row(align=False)
-        row.label(text="Sequence Line Art Items", icon="MOD_LINEART")
         if len(line_art_tools_items) >= 1:
             row.prop(
                 line_art_tools_items[0],
@@ -41,18 +40,26 @@ class LINE_ART_TOOLS_PT_control(bpy.types.Panel):
                 "thickness",
                 slider=False,
                 expand=False,
-                text=item.object.name,
+                text=item.object.name.split("LAT_")[-1],
             )
-            props = row.operator(
-                "linearttools.obj_select", text="", icon="RESTRICT_SELECT_OFF"
+            row.prop(
+                item,
+                "viewport",
+                icon="RESTRICT_VIEW_OFF",
+                text="",
             )
-            props.index = index
             props = row.operator(
                 "linearttools.open_properties", icon="MOD_LINEART", text=""
             )
             props.index = index
             props = row.operator("linearttools.copy_mod", icon="DUPLICATE", text="")
             props.index = index
+            props = row.operator(
+                "linearttools.remove_gp", text="", icon="X", emboss=False
+            )
+            props.index = index
+        if not len(line_art_tools_items) >= 1:
+            row.label(text="No Objects Found!")
 
 
 class SEQUENCER_PT_line_art(bpy.types.Panel):
