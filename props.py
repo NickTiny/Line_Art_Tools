@@ -25,28 +25,10 @@ class lr_seq_items(bpy.types.PropertyGroup):
         else:
             return 0
 
-    def get_viewport(self):
-        obj = self.object
-        if check_gp_obj_modifiers(obj):
-            if self.object.grease_pencil_modifiers["SEQ_LINE_ART"]:
-                return self.object.grease_pencil_modifiers["SEQ_LINE_ART"].show_viewport
-        return
-
-    def set_viewport(self, val: bool):
-        self.object.grease_pencil_modifiers["SEQ_LINE_ART"].show_viewport = val
-
     status: bpy.props.BoolProperty(
         name="Keyframe Sync Status",
         get=get_status,
         description="Line Art keyframes are out of sync with the sequencer, please update by adjusting the thickness to update keyframes or adjust manually.",
-    )
-
-    viewport: bpy.props.BoolProperty(
-        name="Viewport Display Seq Line Art",
-        get=get_viewport,
-        set=set_viewport,
-        options=set(),
-        description="Hide and Show Line Art Modifiers in Viewports",
     )
 
 
@@ -101,6 +83,21 @@ class LINE_ART_TOOLS_props(bpy.types.PropertyGroup):
                 ].thickness_factor = thickness_factor
         return
 
+    def get_viewport(self):
+        obj = self.object
+        if check_gp_obj_modifiers(obj):
+            if self.object.grease_pencil_modifiers[self.lr_mod]:
+                return self.object.grease_pencil_modifiers[self.lr_mod].show_viewport
+        return
+
+    def set_viewport(self, val: bool):
+        self.object.grease_pencil_modifiers[self.lr_mod].show_viewport = val
+
+    def get_objects(self):
+        for obj in bpy.data.objects:
+            if obj == bpy.context.active_object:
+                return obj
+
     object: bpy.props.PointerProperty(type=bpy.types.Object)
     lr_mod: bpy.props.StringProperty(default="Line Art Tools - Line Art")
     thick_mod: bpy.props.StringProperty(default="Line Art Tools - Offset Thickness")
@@ -116,6 +113,13 @@ class LINE_ART_TOOLS_props(bpy.types.PropertyGroup):
         get=get_thickness,
         set=set_thickness,
         options=set(),
+    )
+    viewport: bpy.props.BoolProperty(
+        name="Viewport Display Seq Line Art",
+        get=get_viewport,
+        set=set_viewport,
+        options=set(),
+        description="Hide and Show Line Art Modifiers in Viewports",
     )
 
 
