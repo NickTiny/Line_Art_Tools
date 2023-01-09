@@ -22,7 +22,7 @@ class LINE_ART_TOOLS_PT_control(bpy.types.Panel):
                 "thickness_offset",
                 slider=False,
                 expand=False,
-                text="Thickness Offset",
+                text="Global Thickness",
             )
         row.operator("linearttools.refresh", icon="FILE_REFRESH", text="")
         row.operator(
