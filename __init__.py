@@ -1,4 +1,4 @@
-from . import ops, props, ui  # line_art_cam
+from . import ops, props, ui, pro  # line_art_cam
 
 bl_info = {
     "name": "Line Art Tools",
@@ -16,11 +16,11 @@ def register():
     ops.register()
     props.register()
     ui.register()
-    # line_art_cam.register()  ## Exists because of LINEARTCAMBUG
+    pro.register()
 
 
 def unregister():
     ops.unregister()
     props.unregister()
     ui.unregister()
-    # line_art_cam.unregister()  ## Exists because of LINEARTCAMBUG
+    pro.unregister()

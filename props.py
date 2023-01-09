@@ -1,7 +1,3 @@
-from .core import (
-    sync_line_art_obj_to_strip,
-    set_seq_line_art_thickness,
-)
 import bpy
 
 
@@ -14,41 +10,24 @@ def check_gp_obj_modifiers(obj):
 class lr_seq_items(bpy.types.PropertyGroup):
     object: bpy.props.PointerProperty(type=bpy.types.Object)
 
-    def get_status(self):
-        scene = bpy.context.scene
-        obj = self.object
-        if check_gp_obj_modifiers(obj):
-            if scene.sequence_editor and scene.sequence_editor.active_strip:
-                strip = scene.sequence_editor.active_strip
-                if strip:
-                    return sync_line_art_obj_to_strip(self.object, strip)
-        else:
-            return 0
-
-    status: bpy.props.BoolProperty(
-        name="Keyframe Sync Status",
-        get=get_status,
-        description="Line Art keyframes are out of sync with the sequencer, please update by adjusting the thickness to update keyframes or adjust manually.",
-    )
-
 
 class LINE_ART_TOOLS_props(bpy.types.PropertyGroup):
     def get_thickness(self):
         obj = self.object
-        if check_gp_obj_modifiers(obj):
-            if obj.type == "GPENCIL" and len(obj.users_scene) != 0:
-                return int(obj.grease_pencil_modifiers[self.lr_mod].thickness)
+        if obj.grease_pencil_modifiers:
+            return int(obj.grease_pencil_modifiers[self.lr_mod].thickness)
         return 0
 
     def set_thickness(self, thickness: int):
-        scene = bpy.context.scene
+        scene = bpy.data.window_managers[0].edit_scene
         self.object.grease_pencil_modifiers[self.lr_mod].thickness = thickness
-        return
-        # if scene.sequence_editor and scene.sequence_editor.active_strip:
-        #     strip = scene.sequence_editor.active_strip
-        #     set_thick_done = set_seq_line_art_thickness(self.object, thickness, strip)
-        #     if set_thick_done:
-        #         return
+        if self.sync_to_strips:
+            from .pro import set_seq_line_art_thickness
+
+            if scene.sequence_editor and scene.sequence_editor.active_strip:
+                strip = scene.sequence_editor.active_strip
+                set_thick_done = set_seq_line_art_thickness(self, strip)
+                return
 
     def get_thickness_offset(self):
         items = bpy.data.window_managers[0].line_art_tools_items
@@ -98,6 +77,18 @@ class LINE_ART_TOOLS_props(bpy.types.PropertyGroup):
             if obj == bpy.context.active_object:
                 return obj
 
+    def get_status(self):
+        scene = bpy.context.scene
+        obj = self.object
+        if self.sync_to_strips:
+            from .pro import sync_line_art_obj_to_strip
+
+            if scene.sequence_editor and scene.sequence_editor.active_strip:
+                strip = scene.sequence_editor.active_strip
+                if strip:
+                    return sync_line_art_obj_to_strip(self.object, strip)
+        return 0
+
     object: bpy.props.PointerProperty(type=bpy.types.Object)
     lr_mod: bpy.props.StringProperty(default="Line Art Tools - Line Art")
     thick_mod: bpy.props.StringProperty(default="Line Art Tools - Offset Thickness")
@@ -120,6 +111,18 @@ class LINE_ART_TOOLS_props(bpy.types.PropertyGroup):
         set=set_viewport,
         options=set(),
         description="Hide and Show Line Art Modifiers in Viewports",
+    )
+
+    status: bpy.props.BoolProperty(
+        name="Keyframe Sync Status",
+        get=get_status,
+        description="Line Art keyframes are out of sync with the sequencer, please update by adjusting the thickness to update keyframes or adjust manually.",
+    )
+
+    sync_to_strips: bpy.props.BoolProperty(
+        name="Sync to Strips",
+        description="TODO",
+        default=False,
     )
 
 
@@ -145,7 +148,11 @@ def register():
         description="Select Line Art Target Collection",
         type=bpy.types.Collection,
     )
-
+    bpy.types.WindowManager.edit_scene = bpy.props.PointerProperty(
+        name="Edit Scene",
+        description="Scene that contains Edit Sequence",
+        type=bpy.types.Scene,
+    )
     bpy.types.Object.line_art_seq_obj = bpy.props.BoolProperty(
         name="Enable Seq Line Art Control",
         description="Control Line Art Object from Sequence",

@@ -1,10 +1,11 @@
+from .pro import (
+    sync_line_art_obj_to_strip,
+    check_anim_is_constant,
+)
 from .core import (
     line_art_tools_item_add,
     line_art_tools_remove,
     line_art_tools_refresh,
-    get_gp_modifier_by_name,
-    sync_line_art_obj_to_strip,
-    get_object_animation_is_constant,
     get_line_art_tools_collection,
 )
 
@@ -463,7 +464,7 @@ class SEQUENCER_OT_check_line_art_obj(bpy.types.Operator):
         error_msg = ""
         for item in context.window_manager.line_art_seq_items:
             obj = item.object
-            constant_anim = get_object_animation_is_constant(obj)
+            constant_anim = check_anim_is_constant(obj)
             if constant_anim:
                 for strip in context.scene.sequence_editor.sequences_all:
                     if strip.type == "SCENE":
