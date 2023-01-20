@@ -63,22 +63,22 @@ class LINE_ART_TOOLS_PT_control(bpy.types.Panel):
         # col.prop(context.window_manager, "edit_scene")
 
 
-class VIEW3D_sequence_line_art_panel(bpy.types.Panel):
+class LINE_ART_TOOLS_PT_properties_panel(bpy.types.Panel):
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
     bl_context = "modifier"
-    bl_idname = "VIEW3D_PT_sequencer_line_art"
+    bl_idname = "LINE_ART_TOOLS_PT_properties_panel"
     bl_label = "Line Art Tools"
 
     def draw(self, context):
         row = self.layout.row(align=True)
-        row.label(text="Sequence Line Art")
+        row.label(text="Line Art Tools")
         row.operator("linearttools.obj_enable", icon="MOD_LINEART", text="Enable")
         row.operator("linearttools.obj_disable", icon="X", text="Disable")
 
 
 classes = (
-    VIEW3D_sequence_line_art_panel,
+    LINE_ART_TOOLS_PT_properties_panel,
     LINE_ART_TOOLS_PT_control,
 )
 
